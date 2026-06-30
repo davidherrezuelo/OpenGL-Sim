@@ -1,0 +1,15 @@
+segun chatGPT
+
+Una sugerencia
+
+Si tu objetivo es hacer una simulación de agua en GPU, te recomendaría implementar el algoritmo en este orden:
+
+-Dibujar partículas.
+-Mover partículas con gravedad usando un compute shader.
+-Implementar una uniform grid para buscar vecinos eficientemente.
+-Añadir el cálculo de densidad.
+-Añadir presión.
+-Añadir viscosidad.
+-Finalmente, mejorar el renderizado para que las partículas parezcan un fluido continuo.
+
+Ese es un camino muy parecido al que seguirías en un proyecto real y te permitirá entender cada componente antes de pasar al siguiente.
