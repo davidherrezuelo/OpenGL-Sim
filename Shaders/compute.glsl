@@ -18,6 +18,9 @@ uniform float gravity;
 uniform uint particleCount;
 uniform float damping;
 
+uniform int gridHeight;
+uniform int gridWidth;
+
 
 void main(){
 	uint id = gl_GlobalInvocationID.x;

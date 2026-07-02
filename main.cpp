@@ -9,24 +9,28 @@
 #include "Draw.h"
 
 #define WIDTH 800
-#define HEIGHT 800
+#define HEIGHT 600
+#define MAX_PARTICLES 32
 
 GLFWwindow* window;
 
-float dampingFactor = 0.95;
+float dampingFactor = 0.85;
 float radius = 30.0f;
 unsigned int nPart = 5;
 
-
-const int grid_size = 1;
+const int cellSize = 5;
+glm::vec2 gridDims = glm::vec2(WIDTH / cellSize, HEIGHT / cellSize);
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f;
 
 GLuint VAO;
-GLuint SSBO;
+GLuint VertexSSBO;
+GLuint PartcileIdSSBO;
+GLuint CountsSSBO;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void bindSsboAndData(GLuint SSBO, GLuint binding, unsigned int size, const void* data);
 int initGLFW();
 int initGLAD();
 
@@ -46,6 +50,8 @@ struct Particle
 };
 
 std::vector<Particle> particles;
+std::vector<int> particleID;
+std::vector<unsigned int> particleCount;
 
 int main() {
 	//inicializamos glfw y glad
@@ -61,10 +67,14 @@ int main() {
 	myShader.use();
 
 	cShader computeShader = cShader(computeShaderPath);
-	std::cout << "Compute program ID: " << computeShader.ID << '\n';
+	computeShader.use();
+	computeShader.setInt("gridWidth", gridDims.x);
+	computeShader.setInt("gridHeigt", gridDims.y);
 
 	//reserva espacio
 	particles.resize(nPart);
+	particleID.resize(gridDims.x * gridDims.y * MAX_PARTICLES);
+	particleCount.resize(gridDims.x * gridDims.y);
 
 	//creo generador de n aleatorios
 	std::uniform_real_distribution<float> dist(-0.7f, 0.7f);
@@ -75,25 +85,45 @@ int main() {
 		particles[i].position.y = dist(Random::engine());
 	}
 
+	//inicializar celdas grid
+	int index;
+	for (int i = 0; i < gridDims.y; i++) {
+		for (int j = 0; j < gridDims.x; j++) {
+			index = i * gridDims.x + j;
+			for (int k = 0; k < MAX_PARTICLES; k++) {
+				particleID[index * MAX_PARTICLES + k] = -1;
+			}
+			particleCount[index] = 0;
+		}
+	}
 
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &SSBO);
+
+	glGenBuffers(1, &VertexSSBO);
+	glGenBuffers(1, &PartcileIdSSBO);
+	glGenBuffers(1, &CountsSSBO);
 
 	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
+	//PARTICULAS
+	bindSsboAndData(VertexSSBO, 0, particles.size() * sizeof(Particle), particles.data());
 
-	glBufferData(GL_SHADER_STORAGE_BUFFER, nPart * sizeof(Particle), particles.data(), GL_DYNAMIC_DRAW);
+	//IDS DEL GRID
+	bindSsboAndData(PartcileIdSSBO, 1, particleID.size() * sizeof(int), particleID.data());
 
-	//importante le dice que buffer usar al shader, sustituye al glVertexAttribPointer
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
+	//IDS DEL GRID
+	bindSsboAndData(CountsSSBO, 2, particleCount.size() * sizeof(unsigned int), particleCount.data());
+
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	GLuint groups = (nPart + 255) / 256;
 
+
 	while (!glfwWindowShouldClose(window)) {
 		processKeyboardInput(window);
+
+		glfwFocusWindow(window);
 
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -155,4 +185,12 @@ int initGLAD() {
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+void bindSsboAndData(GLuint SSBO, GLuint binding, unsigned int size, const void *data) {
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
+
+	glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_DRAW);
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, SSBO);
 }
