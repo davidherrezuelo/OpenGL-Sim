@@ -15,7 +15,7 @@
 GLFWwindow* window;
 
 float dampingFactor = 0.85;
-float radius = 30.0f;
+float radius = 5.0f;
 unsigned int nPart = 5;
 
 const int cellSize = 5;
@@ -62,14 +62,29 @@ int main() {
 	const char* vertexShaderPath = "shaders/vertex.glsl";
 	const char* fragmentShaderPath = "shaders/fragment.glsl";
 	const char* computeShaderPath = "shaders/compute.glsl";
+	const char* computeGridShaderPath = "shaders/computeGrid.glsl";
+	const char* clearGridShaderPath = "shaders/clearGrid.glsl";
 	
 	Shader myShader = Shader(vertexShaderPath, fragmentShaderPath);
 	myShader.use();
 
+	cShader clearGrid = cShader(clearGridShaderPath);
+	clearGrid.use();
+	clearGrid.setUint("nCells", gridDims.x * gridDims.y);
+
+	cShader computeGrid = cShader(computeGridShaderPath);
+	computeGrid.use();
+	computeGrid.setUint("gridWidth", gridDims.x);
+	computeGrid.setUint("gridHeigt", gridDims.y);
+	computeGrid.setUint("maxCellSize", MAX_PARTICLES);
+	computeGrid.setUint("particleCount", nPart);
+
 	cShader computeShader = cShader(computeShaderPath);
 	computeShader.use();
-	computeShader.setInt("gridWidth", gridDims.x);
-	computeShader.setInt("gridHeigt", gridDims.y);
+	computeShader.setUint("gridWidth", gridDims.x);
+	computeShader.setUint("gridHeigt", gridDims.y);
+	computeShader.setUint("maxCellSize", MAX_PARTICLES);
+	computeShader.setUint("particleCount", nPart);
 
 	//reserva espacio
 	particles.resize(nPart);
@@ -118,7 +133,7 @@ int main() {
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	GLuint groups = (nPart + 255) / 256;
-
+	GLuint clearGroups = (gridDims.x * gridDims.y + 255) / 256;
 
 	while (!glfwWindowShouldClose(window)) {
 		processKeyboardInput(window);
@@ -133,10 +148,13 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
+		clearGrid.useAndDispatch(clearGroups, 1, 1);
+
+		computeGrid.useAndDispatch(groups, 1, 1);
+
 		computeShader.use();
 		computeShader.setFloat("gravity", -9.8f);
 		computeShader.setFloat("dt", deltaTime);
-		computeShader.setUint("particleCount", nPart);
 		computeShader.setFloat("damping", dampingFactor);
 
 		computeShader.dispatch(groups,1,1);

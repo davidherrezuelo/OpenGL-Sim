@@ -63,5 +63,11 @@
     <None Include="Shaders\fragment.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="computeGrid.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="clearGrid.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

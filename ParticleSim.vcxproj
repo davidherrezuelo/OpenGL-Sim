@@ -146,6 +146,8 @@
     <Text Include="Text.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="clearGrid.glsl" />
+    <None Include="computeGrid.glsl" />
     <None Include="Shaders\compute.glsl" />
     <None Include="Shaders\fragment.glsl" />
     <None Include="Shaders\vertex.glsl" />
