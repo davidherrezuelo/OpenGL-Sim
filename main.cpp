@@ -47,6 +47,7 @@ struct Particle
 {
 	glm::vec2 position;
 	glm::vec2 velocity;
+	float mass;
 };
 
 std::vector<Particle> particles;
@@ -98,6 +99,7 @@ int main() {
 	for (int i = 0; i < nPart; i++) {
 		particles[i].position.x = dist(Random::engine());
 		particles[i].position.y = dist(Random::engine());
+		particles[i].mass = 0.01;	
 	}
 
 	//inicializar celdas grid

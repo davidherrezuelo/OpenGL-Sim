@@ -6,6 +6,7 @@ struct Particle
 {
 	vec2 position;
 	vec2 velocity;
+	float mass;
 };
 
 layout(std430, binding = 0) buffer Particles
@@ -31,8 +32,6 @@ uniform float damping;
 uniform uint gridHeight;
 uniform uint gridWidth;
 uniform uint maxCellSize;
-
-ivec2 gridPos;
 
 void main(){
 	uint id = gl_GlobalInvocationID.x;

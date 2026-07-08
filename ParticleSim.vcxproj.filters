@@ -63,10 +63,16 @@
     <None Include="Shaders\fragment.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="computeGrid.glsl">
+    <None Include="Shaders\clearGrid.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="clearGrid.glsl">
+    <None Include="Shaders\computeGrid.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\computeDensity.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\computePressure.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
