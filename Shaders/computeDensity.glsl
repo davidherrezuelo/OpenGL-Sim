@@ -6,7 +6,11 @@ struct Particle
 {
 	vec2 position;
 	vec2 velocity;
+	vec2 acceleration;	
 	float mass;
+	float density;
+	float pressure;
+	float padding;
 };
 
 layout(std430, binding = 0) buffer Particles
@@ -29,28 +33,41 @@ uniform uint particleCount;
 uniform uint gridHeight;
 uniform uint gridWidth;
 uniform uint maxCellSize;
-uniform float kernelRadius;
+uniform float smoothingRadius;
 
-uvec2 gridPos;
+ivec2 gridPos;
 const float PI = 3.14159265359;
-vec2 cellsToCheck[9];
+ivec2 cellsToCheck[9];
+
+
+float poly6Kernel(float r, float h);
 
 void main(){
-	uint id = gl_GlobalInvocationID.x;
+	uint cellID = gl_GlobalInvocationID.x;
 
-	if(id < particleCount)
+	if(cellID < particleCount)
 	{
-		gridPos.x = id%gridWidth;
-		gridPos.y = id/gridWidth;
+		gridPos.x = int(cellID%gridWidth);
+		gridPos.y = int(cellID/gridWidth);
 
-		for(int i = 0; i<=2; i++){
-			for(int j = 0; j<=2; j++){
+		for(int i = 0; i<=2; i++)
+		{
+			for(int j = 0; j<=2; j++)
+			{
 				cellsToCheck[i*3 + j].x = gridPos.x + j-1;
 				cellsToCheck[i*3 + j].y = gridPos.y + i-1;
 			}
 		}
 
-		
+		uint count = counts[cellID];
+		for (int i = 0; i < count; i++)
+		{
+			uint id = particleIDs[cellID + i];
+			for(int j = 0; j < 9; j++)
+			{
+				uint otherCellCount
+			}
+		}
 
 	}
 

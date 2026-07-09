@@ -4,6 +4,11 @@ struct Particle
 {
 	vec2 position;
 	vec2 velocity;
+	vec2 acceleration;	
+	float mass;
+	float density;
+	float pressure;
+	float padding;
 };
 
 layout(std430, binding = 0) buffer Particles

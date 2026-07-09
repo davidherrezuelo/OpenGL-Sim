@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\dherr\OneDrive - UVa\Escritorio\programacion\openGL\ParticleSim\include\GLFW;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\dherr\OneDrive - UVa\Escritorio\programacion\openGL\ParticleSim\Libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\include\GLFW;$(IncludePath)</IncludePath>
+    <LibraryPath>.\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -106,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\dherr\OneDrive - UVa\Escritorio\programacion\openGL\ParticleSim\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

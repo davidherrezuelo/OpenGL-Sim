@@ -14,8 +14,8 @@
 
 GLFWwindow* window;
 
-float dampingFactor = 0.85;
-float radius = 5.0f;
+float dampingFactor = 0.67;
+float radius = 15.0f;
 unsigned int nPart = 5;
 
 const int cellSize = 5;
@@ -47,7 +47,11 @@ struct Particle
 {
 	glm::vec2 position;
 	glm::vec2 velocity;
+	glm::vec2 acceleration;	
 	float mass;
+	float density;
+	float pressure;
+	float padding;
 };
 
 std::vector<Particle> particles;
@@ -99,6 +103,7 @@ int main() {
 	for (int i = 0; i < nPart; i++) {
 		particles[i].position.x = dist(Random::engine());
 		particles[i].position.y = dist(Random::engine());
+		particles[i].velocity = glm::vec2(0.0f);
 		particles[i].mass = 0.01;	
 	}
 
@@ -113,6 +118,21 @@ int main() {
 			particleCount[index] = 0;
 		}
 	}
+
+	std::cout << particles.size() << std::endl;
+	for (int i = 0; i < particles.size(); i++)
+	{
+		std::cout
+			<< i << " "
+			<< particles[i].position.x << " "
+			<< particles[i].position.y << std::endl;
+	}
+
+#include <cstddef>
+
+	std::cout << offsetof(Particle, position) << '\n';
+	std::cout << offsetof(Particle, velocity) << '\n';
+	std::cout << offsetof(Particle, mass) << '\n';
 
 	glGenVertexArrays(1, &VAO);
 
@@ -137,6 +157,8 @@ int main() {
 	GLuint groups = (nPart + 255) / 256;
 	GLuint clearGroups = (gridDims.x * gridDims.y + 255) / 256;
 
+	lastFrame = glfwGetTime();
+
 	while (!glfwWindowShouldClose(window)) {
 		processKeyboardInput(window);
 
@@ -150,9 +172,9 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		clearGrid.useAndDispatch(clearGroups, 1, 1);
+		//clearGrid.useAndDispatch(clearGroups, 1, 1);
 
-		computeGrid.useAndDispatch(groups, 1, 1);
+		//computeGrid.useAndDispatch(groups, 1, 1);
 
 		computeShader.use();
 		computeShader.setFloat("gravity", -9.8f);
@@ -160,7 +182,6 @@ int main() {
 		computeShader.setFloat("damping", dampingFactor);
 
 		computeShader.dispatch(groups,1,1);
-		computeShader.dispatch(groups, 1, 1);
 
 		myShader.use();
 		myShader.setFloat("size", radius);
